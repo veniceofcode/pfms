@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  pfms:
+    build: .
+    image: local/pfms
+    container_name: pfms
+    volumes:
+      - ./pfms:/pfms
+    # command: uvicorn main:app --reload
+    environment:
+      MAX_WORKERS: 1
+      SESSION_USERNAME: localuser
+    ports:
+      - "2024:2024"
+    networks:
+      local:
+
+networks:
+  local:

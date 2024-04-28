@@ -1,0 +1,21 @@
+# Debugging
+pudb
+ipython
+pytest
+
+# Database
+fastapi
+
+# Logging
+loguru
+pfmisc
+
+# Misc
+pydantic>=2.3.0
+pydantic_settings
+appdirs
+psutil
+pftag
+
+spleenseg
+
