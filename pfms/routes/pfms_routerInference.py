@@ -1,12 +1,15 @@
+from shutil import ignore_patterns
 from fastapi import APIRouter, Query, HTTPException, BackgroundTasks, Request
-from fastapi import File, UploadFile
-from typing import List, Dict, Any, Union
+from fastapi import File, UploadFile, Path, Form
+from typing import List, Dict, Any, Union, Annotated
+
+from starlette.responses import FileResponse
 
 from models import credentialModel
 from models import iresponse
 from controllers import pfmsController_inference
 from routes import credentialRouter
-
+from pathlib import Path as PathLib
 from config import settings
 from pftag import pftag
 import pudb
@@ -16,13 +19,13 @@ router.tags = ["pfms endpoints"]
 
 
 @router.get(
-    "/spleenseg/models/",
-    response_model=iresponse.modelsAvailable,
+    "/spleenseg/modelpth/",
+    response_model=iresponse.ModelsAvailable,
     summary="""
     GET the list of available models.
     """,
 )
-def models_listAll() -> iresponse.modelsAvailable:
+def models_listAll() -> iresponse.ModelsAvailable:
     """
     Description
     -----------
@@ -31,36 +34,72 @@ def models_listAll() -> iresponse.modelsAvailable:
 
     Returns
     -------
-    * `iresponse.modelsAvailable`: The response containing the list of models
+    * `iresponse.ModelsAvailable`: The response containing the list of models
     """
     # pudb.set_trace()
-    modelList: iresponse.modelsAvailable = pfmsController_inference.showAll()
+    modelList: iresponse.ModelsAvailable = pfmsController_inference.models_list()
     return modelList
 
 
 @router.post(
-    "/spleenseg/NIfTIinference/",
-    response_model=iresponse.inferenceResponseNIFTI,
+    "/spleenseg/modelpth/",
+    response_model=iresponse.ModelUploadResponse,
     summary="""
-        POST a NIfTI volume and expect an inference.
-          """,
+    POST a model pth file to the server.
+    """,
 )
-async def uploadAndInferOnNIfTIfile(
+async def model_upload(
+    request: Request,
     file: UploadFile = File(...),
-) -> iresponse.inferenceResponseNIFTI:
+) -> iresponse.ModelUploadResponse:
     """
     Description
     -----------
 
-    POST a NIfTI volume spleen scan, and expect a reponse inference.
+    POST (upload) a model weights file. Pass a query parameter of `?modelID=<modelID>`
+    to set the internal name of this model.
 
     Returns
     -------
-    * `iresponse.inferenceResponseNIFTI`: The response containing the list of models
+    * `iresponse.ModelUploadResponse`: The response containing the list of available
+       models.
     """
-    pudb.set_trace()
-    inference: iresponse.inferenceResponseNIFTI = (
-        await pfmsController_inference.inferenceOnNIfTI(file)
+    # pudb.set_trace()
+    modelID: str = request.query_params.get("modelID", "")
+    modelUpload: iresponse.ModelUploadResponse = (
+        await pfmsController_inference.model_save(file, modelID)
     )
+    return modelUpload
 
+
+@router.post(
+    "/spleenseg/NIfTIinference/",
+    summary="""
+        POST (upload) a NIfTI volume. Pass a query parameter of `?modelID=<modelID>`
+        to set the internal name of the model to use for inference. Returns a
+        `FileResponse` octet-stream of the generated segmentned NIfTI volume
+        response.
+    """,
+)
+async def uploadAndInferOnNIfTIfile(
+    request: Request,
+    file: UploadFile = File(...),
+) -> FileResponse:
+    """
+    Description
+    -----------
+
+    POST a NIfTI volume spleen scan, specify a modelID in query params,
+    and expect a reponse inference.
+
+    Returns
+    -------
+    * `FileResponse`: The response from the inference as an octet-stream; save
+    to compressed NIfTI file.
+    """
+    # pudb.set_trace()
+    modelID: str = request.query_params.get("modelID", "")
+    inference: FileResponse = await pfmsController_inference.inferenceOnNIfTI(
+        file, modelID
+    )
     return inference
