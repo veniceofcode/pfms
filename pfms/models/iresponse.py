@@ -6,14 +6,26 @@ from pathlib import Path
 from pydantic import BaseModel
 import pudb
 from config import settings
+from fastapi import File, UploadFile
 
 
-class inferenceResponseNIFTI(BaseModel):
+class InferenceResponseNIFTI(BaseModel):
     inputfilename: str = ""
     shape: list[int] = []
     dtype: str = ""
     data: list[float] = []
 
 
-class modelsAvailable(BaseModel):
+class ModelsAvailable(BaseModel):
     models: list[str] = []
+
+
+class ModelUploadResponse(BaseModel):
+    status: bool = False
+    message: str = ""
+    location: Path = Path("")
+
+
+class ModelUploadRequest(BaseModel):
+    identifier: str
+    file: UploadFile = File(...)
