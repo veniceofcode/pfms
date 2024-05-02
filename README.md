@@ -1,6 +1,6 @@
 # `pfms`
 
-[![Build](https://github.com/FNNDSC/pfmdb/actions/workflows/build.yml/badge.svg)](https://github.com/FNNDSC/pfmdb/actions/workflows/build.yml)
+[![Build](https://github.com/FNNDSC/pfms/actions/workflows/build.yml/badge.svg)](https://github.com/FNNDSC/pfms/actions/workflows/build.yml)
 
 *a FastAPI REST service that provides somewhat bespoke inference services on medical data*
 
