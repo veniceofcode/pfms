@@ -73,7 +73,7 @@ jobs:
           context: .
           file: ./Dockerfile
           tags: ${{ steps.info.outputs.tags_csv }}
-          platforms: linux/amd64,linux/ppc64le,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: ${{ steps.info.outputs.push }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
