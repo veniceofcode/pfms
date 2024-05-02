@@ -46,7 +46,7 @@ To start the services
 ```bash
 SESSIONUSER=localuser
 docker run --gpus all --privileged          \
-        --env SESSIONUSER= $SESSIONUSER     \
+        --env SESSIONUSER=$SESSIONUSER      \
         --name pfms --rm -it -d             \
         -p 2024:2024                        \
         local/pfms /start-reload.sh
@@ -57,7 +57,7 @@ To start with source code debugging and live refreshing:
 ```bash
 SESSIONUSER=localuser
 docker run --gpus all --privileged          \
-        --env SESSIONUSER= $SESSIONUSER     \
+        --env SESSIONUSER=$SESSIONUSER      \
         --name pfms --rm -it -d             \
         -p 2024:2024                        \
         -v $PWD/pfms:/app:ro
