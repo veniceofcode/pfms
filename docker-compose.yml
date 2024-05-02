@@ -2,12 +2,17 @@ version: '3.9'
 
 services:
   pfms:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: ${UID}
+        http_proxy: ${HTTP_PROXY}
     image: local/pfms
     container_name: pfms
     volumes:
-      - ./pfms:/pfms
-    # command: uvicorn main:app --reload
+      - ./pfms:/app
+    command: /start-reload.sh
     environment:
       MAX_WORKERS: 1
       SESSION_USERNAME: localuser
@@ -15,6 +20,14 @@ services:
       - "2024:2024"
     networks:
       local:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    privileged: true
 
 networks:
   local:

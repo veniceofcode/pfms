@@ -35,6 +35,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --upgrade pip
+RUN pip install -U email-validator
 RUN pip install -r /tmp/requirements.txt && rm -v /tmp/requirements.txt
 # RUN pip install tzlocal
 # RUN pip install ipython
@@ -44,10 +45,10 @@ RUN pip install -r /tmp/requirements.txt && rm -v /tmp/requirements.txt
 COPY ./pfms /app
 
 RUN apt update                              && \
+    apt -y upgrade                          && \
     apt-get install -y apt-transport-https  && \
-    apt -y install dcmtk                    && \
     apt -y install ssh iputils-ping         && \
-    apt -y install vim telnet netcat-traditional procps binutils
+    apt -y install vim telnet netcat-traditional procps 
 
 # Create the 'localuser' group with specified GID
 RUN groupadd -g 1102 localuser
