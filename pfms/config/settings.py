@@ -8,6 +8,7 @@ from pathlib import Path
 
 class ModelMeta(BaseSettings):
     location: Path = Path.home() / "spleenseg" / "models"
+    device: str = "cuda:0"
 
 
 class AnalysisMeta(BaseSettings):
