@@ -19,6 +19,55 @@ router.tags = ["pfms endpoints"]
 
 
 @router.get(
+    "/spleenseg/inference/device/",
+    response_model=iresponse.InferenceDevice,
+    summary="""
+    GET the current inference device hardware.
+    """,
+)
+def device_list() -> iresponse.InferenceDevice:
+    """
+    Description
+    -----------
+
+    GET the current list of models in the pfms server.
+
+    Returns
+    -------
+    * `iresponse.InferenceDevice`: The response containing the list of models
+    """
+    # pudb.set_trace()
+    iDevice: iresponse.InferenceDevice = iresponse.InferenceDevice()
+    iDevice.device = settings.modelMeta.device
+    return iDevice
+
+
+@router.put(
+    "/spleenseg/inference/device/{device}",
+    response_model=iresponse.InferenceDevice,
+    summary="""
+    PUT the inference device hardware to use.
+    """,
+)
+def device_put(
+    device: str, iDevice: iresponse.InferenceDevice
+) -> iresponse.InferenceDevice:
+    """
+    Description
+    -----------
+
+    PUT the inference device to use.
+
+    Returns
+    -------
+    * `iresponse.InferenceDevice`: The response containing the inference device
+    """
+    iDevice.device = device
+    settings.modelMeta.device = device
+    return iDevice
+
+
+@router.get(
     "/spleenseg/modelpth/",
     response_model=iresponse.ModelsAvailable,
     summary="""
