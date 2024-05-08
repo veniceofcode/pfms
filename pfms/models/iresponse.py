@@ -26,6 +26,10 @@ class ModelUploadResponse(BaseModel):
     location: Path = Path("")
 
 
+class InferenceDevice(BaseModel):
+    device: str = ""
+
+
 class ModelUploadRequest(BaseModel):
     identifier: str
     file: UploadFile = File(...)
