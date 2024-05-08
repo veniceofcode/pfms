@@ -7,6 +7,7 @@ from typing import Optional, List, Dict, Callable, Any
 
 import asyncio
 
+from pydantic_core.core_schema import ExpectedSerializationTypes
 from torch import parse_ir
 from models import iresponse
 import os
@@ -76,7 +77,11 @@ async def model_save(
 
 def models_list() -> iresponse.ModelsAvailable:
     resp: iresponse.ModelsAvailable = iresponse.ModelsAvailable()
-    resp.models = os.listdir(str(settings.modelMeta.location))
+    try:
+        resp.models = os.listdir(str(settings.modelMeta.location))
+    except Exception as e:
+        print(f"An exception in model listing was caught: {e}")
+        print("This is probably safe and simply means no models have been POSTed.")
     return resp
 
 
@@ -107,7 +112,7 @@ def NIfTIvol_infer(remote: UploadFile, inputDir: Path, outputDir: Path) -> Path:
     NIfTIvol_saveInput(remote, inputDir)
     options: Namespace = psr.parser_interpret(psr.parser_setup(""), asModule=True)
     options.mode = "inference"
-    options.device = "cuda:0"
+    options.device = settings.modelMeta.device
     options.logTransformVols = True
     options.inputdir = str(inputDir)
     options.outputdir = str(outputDir)
